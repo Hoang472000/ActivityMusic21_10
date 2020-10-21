@@ -1,0 +1,451 @@
+Index: app/src/main/java/com/out/activitymusic/ListView.java
+===================================================================
+--- app/src/main/java/com/out/activitymusic/ListView.java	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/java/com/out/activitymusic/ListView.java	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
+@@ -1,16 +0,0 @@
+-package com.out.activitymusic;
+-
+-import java.util.LinkedList;
+-
+-public class ListView {
+-    private LinkedList<String> mListView;
+-    public LinkedList<String> createListView() {
+-        mListView = new LinkedList<>();
+-        for (int i = 0; i < 20; i++)
+-            mListView.addLast("Music" + i);
+-        return mListView;
+-    }
+-
+-
+-
+-}
+Index: app/src/main/res/menu
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/res/menu	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
+@@ -1,0 +0,0 @@
+Index: app/src/main/java/com/out/activitymusic/Music.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/Music.java	(date 1598608493000)
++++ app/src/main/java/com/out/activitymusic/Music.java	(date 1598608493000)
+@@ -0,0 +1,18 @@
++package com.out.activitymusic;
++
++import java.util.ArrayList;
++
++public class Music {
++    MusicClass musicClass;
++    public ArrayList<MusicClass> arrayList = new ArrayList<>();
++    public static ArrayList<MusicClass> setListMusic(){
++        ArrayList<MusicClass> arrayList = new ArrayList<>();
++        arrayList.add(new MusicClass("track1","3:50"));
++        arrayList.add(new MusicClass("track2","4:35"));
++        arrayList.add(new MusicClass("track3","1:12"));
++        arrayList.add(new MusicClass("track3","9:45"));
++        arrayList.add(new MusicClass("track3","10:23"));
++        return arrayList;
++    }
++
++}
+Index: app/src/main/res/layout/list_view.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/list_view.xml	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/res/layout/list_view.xml	(date 1598608192000)
+@@ -1,20 +1,51 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<androidx.constraintlayout.widget.ConstraintLayout
++<LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+-    android:layout_width="wrap_content"
+-    android:layout_height="wrap_content">
++    android:layout_width="match_parent"
++    android:layout_height="wrap_content"
++    android:orientation="horizontal">
+ 
+ 
+     <TextView
+-        android:id="@+id/list_view"
++        android:id="@+id/STT"
++        android:layout_width="70sp"
++        android:layout_height="70sp"
++        android:padding="20sp"
++        android:text="@string/STT"
++        android:textAlignment="center"
++        android:textSize="18sp"></TextView>
++
++    <LinearLayout
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+-        android:layout_marginStart="24dp"
+-        android:layout_marginTop="24dp"
+-        android:text="Hoang"
+-        android:textSize="24sp"
+-        app:layout_constraintStart_toStartOf="parent"
+-        app:layout_constraintTop_toTopOf="parent" />
+-</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
++        android:orientation="vertical">
++
++        <TextView
++            android:id="@+id/music"
++            android:layout_width="250sp"
++            android:layout_height="35sp"
++            android:padding="5sp"
++            android:text="@string/music"
++            android:textSize="18sp"></TextView>
++
++        <TextView
++            android:id="@+id/tvTime"
++            android:layout_width="250sp"
++            android:layout_height="35sp"
++            android:padding="5sp"
++            android:text="@string/time"
++            android:textSize="18sp"></TextView>
++    </LinearLayout>
++
++    <ImageView
++        android:id="@+id/imageView"
++        android:layout_width="60sp"
++        android:layout_height="70sp"
++
++        app:srcCompat="@drawable/ic_dau3cham" />
++
++    </LinearLayout>
++
++
+Index: app/src/main/java/com/out/activitymusic/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/MainActivity.java	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/java/com/out/activitymusic/MainActivity.java	(date 1598598330000)
+@@ -9,6 +9,7 @@
+ 
+ import android.annotation.SuppressLint;
+ import android.os.Bundle;
++import android.view.Menu;
+ import android.view.View;
+ import android.widget.AdapterView;
+ import android.widget.ArrayAdapter;
+@@ -43,5 +44,10 @@
+ 
+ 
+     }
++    @Override
++    public boolean onCreateOptionsMenu(Menu menu) {
++        getMenuInflater().inflate(R.menu.menu_seach, menu);
++        return true;
++    }
+ 
+ }
+\ No newline at end of file
+Index: app/src/main/res/layout/mediaplaybackfragment.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/mediaplaybackfragment.xml	(date 1598609056000)
++++ app/src/main/res/layout/mediaplaybackfragment.xml	(date 1598609056000)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<androidx.constraintlayout.widget.ConstraintLayout
++    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++</androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/out/activitymusic/MusicClass.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/MusicClass.java	(date 1598608338000)
++++ app/src/main/java/com/out/activitymusic/MusicClass.java	(date 1598608338000)
+@@ -0,0 +1,27 @@
++package com.out.activitymusic;
++
++public class MusicClass {
++    private String title;
++    private String timeSong;
++
++    public MusicClass(String title, String timeSong) {
++        this.title = title;
++        this.timeSong = timeSong;
++    }
++
++    public String getTitle() {
++        return title;
++    }
++
++    public void setTitle(String title) {
++        this.title = title;
++    }
++
++    public String getTimeSong() {
++        return timeSong;
++    }
++
++    public void setTimeSong(String timeSong) {
++        this.timeSong = timeSong;
++    }
++}
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/res/values/strings.xml	(date 1598599838000)
+@@ -1,4 +1,8 @@
+ <resources>
+     <string name="app_name">Music</string>
+     <string name="hoang">hoang</string>
++    <string name="menuseach">menuseach</string>
++    <string name="STT">1</string>
++    <string name="music">Music1</string>
++    <string name="time">5:34</string>
+ </resources>
+\ No newline at end of file
+Index: app/src/main/res/menu/menu_seach.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/menu_seach.xml	(date 1598599135000)
++++ app/src/main/res/menu/menu_seach.xml	(date 1598599135000)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="utf-8"?>
++<menu xmlns:android="http://schemas.android.com/apk/res/android">
++    <item android:id="@+id/menu_seach"
++        android:title=""
++        android:icon="@drawable/ic_search"/>
++</menu>
+\ No newline at end of file
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/res/layout/activity_main.xml	(date 1598599838000)
+@@ -14,6 +14,7 @@
+         app:layout_constraintStart_toStartOf="parent"
+         app:layout_constraintTop_toTopOf="parent">
+ 
++
+     </FrameLayout>
+ 
+ 
+Index: app/src/main/java/com/out/activitymusic/ListAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/ListAdapter.java	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/java/com/out/activitymusic/ListAdapter.java	(date 1598608338000)
+@@ -1,21 +1,25 @@
+ package com.out.activitymusic;
+ 
+ import android.content.Context;
++import android.util.Log;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.TextView;
++import android.widget.Toast;
+ 
++import java.util.ArrayList;
+ import java.util.LinkedList;
++import java.util.List;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.recyclerview.widget.RecyclerView;
+ 
+-class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
+-    private LinkedList<String> mListView;
++public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>{
++    private ArrayList<MusicClass> mListView;
+     private LayoutInflater mInflater;
+ 
+-    public ListAdapter(Context context, LinkedList<String> ListView) {
++    public ListAdapter(Context context, ArrayList<MusicClass> ListView) {
+         mInflater=LayoutInflater.from(context);
+         this.mListView = ListView;
+     }
+@@ -30,8 +34,13 @@
+ 
+     @Override
+     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+-        String mCurrent =mListView.get(position);
+-        holder.mListItemView.setText(mCurrent);
++        MusicClass mCurrent =mListView.get(position);
++//        String mCurrent1=mListSTT.get(position);
++        holder.mStt.setText((position+1)+"");
++        holder.mTitle.setText(mCurrent.getTitle());
++        Log.i("main",mCurrent.getTimeSong());
++        holder.mTime.setText(mCurrent.getTimeSong());
++//        holder.mListItemView2.setText(mCurrent1);
+ 
+     }
+ 
+@@ -40,33 +49,27 @@
+         return mListView.size();
+     }
+ 
+-    public class ViewHolder extends RecyclerView.ViewHolder
+-            implements View.OnClickListener {
++    public class ViewHolder extends RecyclerView.ViewHolder {
+ 
+-        public final TextView mListItemView;
++        public TextView mStt;
++        public TextView mTitle;
++        public TextView mTime;
+         final ListAdapter mAdapter;
+ 
+ 
+         public ViewHolder(@NonNull View itemView, ListAdapter adapter) {
+             super(itemView);
+             this.mAdapter = adapter;
+-            mListItemView = itemView.findViewById(R.id.list_view);
+-            itemView.setOnClickListener(this);
++            mStt = itemView.findViewById(R.id.STT);
++            mTitle = itemView.findViewById(R.id.music);
++            mTime = itemView.findViewById(R.id.tvTime);
++
++//            mListItemView2 = itemView.findViewById(R.id.STT);
++
+ 
+         }
+ 
+ 
+-        @Override
+-        public void onClick(View v) {
+-            int mPosition = getLayoutPosition();
+-// Use that to access the affected item in mWordList.
+-            String element = mListView.get(mPosition);
+-// Change the word in the mWordList.
+-            mListView.set(mPosition, "Clicked! " + element);
+-// Notify the adapter, that the data has changed so it can
+-// update the RecyclerView to display the data.
+-            mAdapter.notifyDataSetChanged();
+-        }
+ 
+ 
+     }}
+Index: app/src/main/java/com/out/activitymusic/AllSongsFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/AllSongsFragment.java	(revision de8b069214d99ac578c2348dfcc8a1acf28577c4)
++++ app/src/main/java/com/out/activitymusic/AllSongsFragment.java	(date 1598608493000)
+@@ -3,6 +3,10 @@
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
++import android.widget.ListView;
++
++import java.util.ArrayList;
++import java.util.List;
+ 
+ import androidx.annotation.NonNull;
+ import androidx.annotation.Nullable;
+@@ -12,27 +16,35 @@
+ 
+ 
+ public class AllSongsFragment extends Fragment {
+-    private ListAdapter mListAdapter;
+-    private RecyclerView mRecyclerView;
+-    private ListView mListView;
++    private ListAdapter mListAdapter1;
++
++    private RecyclerView mRecyclerView1;
++
++    private ArrayList<MusicClass> arrayList;
+     View mInflater;
+ 
+     @Nullable
+     @Override
+     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+         mInflater=inflater.inflate(R.layout.allsongsfragment,container,false);
+-        mRecyclerView=mInflater.findViewById(R.id.recycle_view);
+-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+-        mListView= new ListView();
+-        mListAdapter = new ListAdapter(getContext(),mListView.createListView());
+-        mRecyclerView.setAdapter(mListAdapter);
++        mRecyclerView1=mInflater.findViewById(R.id.recycle_view);
++        mRecyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
++
++        arrayList = Music.setListMusic();
++
++        mListAdapter1 = new ListAdapter(getContext(),arrayList);
++
++        mRecyclerView1.setAdapter(mListAdapter1);
++
+ 
+         return mInflater;
+     }
+-}
++
++    }
+ 
+ 
+ 
+ 
+ 
+ 
++
+diff --git app/src/main/res/drawable/ic_search.png app/src/main/res/drawable/ic_search.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..e9df0e2b73a820f1e5a7add7d1006970e0813cc8
+GIT binary patch
+literal 1183
+zc%17D@N?(olHy`uVBq!ia0vp^9w5xY3?!3`ol6-Q7?lHjLR^7d#ZiD4Ec2J&1PrEx
+zk|4ie21aHUR!$~9tK8MMzX=r|y7A}lKh3>fkCVUt_IbIx+`-gR<LUcmg9BUDvwuxz
+z6T36BXea-%cd8amWv_Mf)~sR|{GM;jJ@?|QkY$H?e@b)RH9u;$MB;_@g@`nc`%g@4
+zUhQQK{lUP%blTI!F(l&f+wjb2DMNvIEv5|%c64@iD?Mnv{wQ$Ig`zKZYqoB?<^B54
+z|M-h4IoYdst8K9R8}y9%yxQ){&-;ug&tx#z(0JF#$@4|=dIQd{uX!|!uOu(B*I=9A
+zv$WkfGIi#|60Mcbe>F%-o_#ofnzZao*)AsUe#KpS;!-XJ*Ii}2jejmPpYxHE^|QFL
+z=^TmooSg?!;wDY#-YIQR^wlGwPUubSyarAFt4@IzBG$QSYIyYB6H!_7*XHfQ)!`3)
+z3b%!<o8rCssHE+*&-b=0JuZ3XEV~7FxA*?#)5XM@mi)A|RynrnVAoU8mu06o6nnhH
+z*XywV2tBrjW386V#<tgX7UqhJ_<p?Jp(b)^6|1UKmb6x!jQPp69>EH;v-tJQvRY;+
+zZ#x>>y7}$>PGiRUXvLj1rzI?z`d>v%nEmceTZ&xkU0KiV4PTdN&enMI(zejP<UGrp
+z#m}M*RV|vCT{)!NRo-}e@ky`Hkezw=Z$#aTB*RC}Y_312C0~{>Rd0T!A>$ITeA31<
+zyk{)b7KDY(4UFq5P-~pz6?TSiX2UJnSi@5j9a3YXZSITwjS|n$7s~KwF3no@<M%w#
+z#eTO{a!*`xUt2F`nsMvN#Ee<pCnkob*&C*swRZhn!#S@u%PN~?lG*b8zs}t7ez)G;
+zFQ9+ffzD9Hzt49$J?b`7-kA06^n$ego3geq(^LAeHPzba>sIspgX?nd-_Pvd`0w44
+z)bgo2wtx4w{&sKvEk)NmZY@h@{$6nWr?K^t4ZkO9c&zC^=`ZX1<`2^!yZoF_4?l}X
+zc89Wgh(FW4+ImN^JAVJkny>p`JM5^)T>0+W+HEuUSp^nvy7sJj!mU-itIwBph}9O#
+zsZ3eBt7Eo(>*mvOS6x{jZAmW`oV!fERB+Be;nJV0>;9RxuFU?U@P+ZpQMOmB9^0(j
+z694Lvm36@MUHklwa{c#hUw`EJW!+N_4;*`fByJp#yHm&H-1Fk9joYe^z%0bz>FVdQ
+I&MBb@0LIbC0{{R3
+
+diff --git app/src/main/res/drawable/ic_dau3cham.png app/src/main/res/drawable/ic_dau3cham.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..2416609dd70e09512ff226a3b8eb1afb6c267060
+GIT binary patch
+literal 688
+zc%17D@N?(olHy`uVBq!ia0vp^2_VeD3?#3*wSy$)2l#}z0%^rT3}$k!j{`c<q$J2M
+zn1PXrm6L@h`RcbT*}@w{I)D6YVpe+g=daCgTa!IM4?2Hx3%V(kQlHAEtD`yp`%<mz
+z%NKk$xER*Kz`)q!>EalYaqsPP@99kjJgt|RLTeUfu!`Pa)Rh1EfBo$SzT?KLZ&rxU
+zo1D+MM(UE<_hl|k3LHRm==*{%pI0Wl7PegX+ScCS_3Ws--=%$<I~RnmKI?yL?)A9Z
+zn*Y0HzRaj*{I1EO;?TTMb}DDjn*xXV{)$UF9$yzbD#IAWk@<(upp9il#BZ*I$D9fc
+zm(oso?yNgx+?=s(!ZYq|o=KG(T|xpQ-B*{+bgX4vvG9J_y`0M>=^Scqzs_?{YTkU`
+zx~qY)L?SDJVeS2O44;~vMN%E?PxLc>emST4PlMidr*<yeUC&rPGQU4o_mbW2zHM(n
+z*PF!ZRQ2y~l$%#*-r;}1cp%#4*6#53n$H4n*J!Rk^`+_J?nM{RsXu!#<8jo?O&V4L
+z7x=G4f7%zk?qOT=wlhg}_m{pbYqolll(TaB+&yf)x{A814`%ZPa;2tSePLnR5Tw<1
+ze}`1v+b7n?%Qwg$SRZiI{`+e0gy{-(3#_i1Zd>Y5moSU>{`%`Y7x-<imp0UW*frDf
+iYm@+sBM|-QmtU~jc#~PS$v<GcGI+ZBxvX<aXaWG`n*-he
+

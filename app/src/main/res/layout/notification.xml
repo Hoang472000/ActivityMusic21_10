@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relative1"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="150dp">
+    <RelativeLayout
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:id="@+id/relative_img">
+    <ImageView
+        android:id="@+id/img_ntf"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/ic_fab_pause_btn_normal" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/relative_song"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@id/relative_img">
+    <TextView
+        android:id="@+id/title_ntf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/artist_ntf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/title_ntf"
+        android:layout_marginTop="10dp"
+        android:text="TextView" />
+
+        <TextView
+            android:id="@+id/text_ntf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/artist_ntf"
+            android:layout_marginTop="10dp"
+            android:text="Music" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relaytive_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/relative_song"
+        android:layout_toRightOf="@+id/relative_img"
+        android:layout_marginTop="1dp">
+
+
+
+        <ImageView
+            android:id="@+id/previous_ntf"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/play_ntf"
+            app:srcCompat="@drawable/ic_rew_dark" />
+
+        <ImageView
+            android:id="@+id/play_ntf"
+            android:layout_width="50sp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@+id/next_ntf"
+            app:srcCompat="@drawable/ic_baseline_pause_circle_filled_24" />
+
+        <ImageView
+            android:id="@+id/next_ntf"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            app:srcCompat="@drawable/ic_fwd_dark" />
+
+    </RelativeLayout>
+</RelativeLayout>

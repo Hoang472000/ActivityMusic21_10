@@ -1,0 +1,16 @@
+Index: app/src/main/java/com/out/activitymusic/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/MainActivity.java	(revision c9fbc11bc05a117f1d7316be5e67c8143e3e7389)
++++ app/src/main/java/com/out/activitymusic/MainActivity.java	(date 1599889246000)
+@@ -17,6 +17,8 @@
+ import android.view.MenuInflater;
+ import android.view.MenuItem;
+ import android.view.View;
++
++
+ import android.widget.Adapter;
+ import android.widget.Toast;
+ 

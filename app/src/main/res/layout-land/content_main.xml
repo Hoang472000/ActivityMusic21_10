@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        tools:context=".MainActivity"
+        tools:showIn="@layout/app_bar_main"
+        android:layout_weight="10">
+
+        <FrameLayout
+            android:id="@+id/fragmentSongOne"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="-2dp"
+            android:layout_weight="4"
+            tools:layout_editor_absoluteY="8dp"
+            android:layout_marginTop="48dp">
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/fragmentMediaTwo"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_marginTop="48dp"
+            class = "com.fragment.NavigationDrawerFragment"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="-2dp"
+            tools:layout_editor_absoluteY="8dp"/>
+
+    </LinearLayout>

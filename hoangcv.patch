@@ -1,0 +1,19 @@
+Index: app/src/main/java/com/out/activitymusic/AllSongsFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/out/activitymusic/AllSongsFragment.java	(revision ce7df6068492232020134a4312b074556ded2aab)
++++ app/src/main/java/com/out/activitymusic/AllSongsFragment.java	(date 1599640827000)
+@@ -174,11 +174,6 @@
+     }
+ 
+ 
+-/*
+-    @Override
+-public void onSaveInstanceState(@NonNull Bundle outState) {
+-    super.onSaveInstanceState(outState);
+-}*/
+ 
+     
+ }

@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Music</string>
+    <string name="hoang">hoang</string>
+    <string name="menuseach">menuseach</string>
+    <string name="STT">1</string>
+    <string name="music">Music1</string>
+    <string name="time">5:34</string>
+    <string name="time_1">0:00</string>
+    <string name="time_2">0:00</string>
+    <string name="favourite">" Favourite List"</string>
+    <string name="recents">Recents</string>
+    <string name="music_library">Music Library</string>
+    <string name="setting">Settings</string>
+    <string name="help_feedback"><![CDATA[Help & Feedback]]></string>
+    <string name="my_navigation">123</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_title">App music</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">SlideShow</string>
+    <string name="listen_now">List Now</string>
+</resources>
