@@ -3,17 +3,17 @@
 
     <gradient
         android:angle="90"
-        android:centerColor="#FD858585"
-        android:endColor="#FD858585"
-        android:startColor="#FD858585"
+        android:centerColor="#FDA6A3A3"
+        android:endColor="#FDA6A3A3"
+        android:startColor="#FDA6A3A3"
         />
 
-    <stroke
+   <!-- <stroke
+        android:width="0.5dp"
+        android:color="#FDBDBDBD"
+        />-->
+   <!-- <stroke
         android:width="1dp"
-        android:color="#FD858585"
-        />
-    <stroke
-        android:width="1dp"
-        android:color="#FD858585" />
+        android:color="#FDD5D0D0" />-->
 
 </shape>

@@ -2,6 +2,7 @@ package com.out.activitymusic;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -110,6 +111,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
                                 values.put(FavoriteSongsProvider.IS_FAVORITE, 2);
                                 mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mPosision).getID(), null);
                                 Toast.makeText(mContext, "addFavorite song //" + mListSong.get(mPosision).getTitle(), Toast.LENGTH_SHORT).show();
+                                mListSong.get(mPosision).setFavorite(true);
                                 return true;
                             case R.id.remove_song_favorite:
                                 ContentValues values1 = new ContentValues();
@@ -117,6 +119,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> im
                                 values1.put(FavoriteSongsProvider.COUNT_OF_PLAY, 0);
                                 mContext.getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mPosision).getID(), null);
                                 Toast.makeText(mContext, "removeFavorite song //" + mListSong.get(mPosision).getTitle(), Toast.LENGTH_SHORT).show();
+                                mListSong.get(mPosision).setFavorite(false);
                                 return true;
                             default:
                                 return false;

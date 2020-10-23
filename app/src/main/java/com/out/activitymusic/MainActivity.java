@@ -3,6 +3,7 @@ package com.out.activitymusic;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -39,13 +40,14 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
     AllSongsFragment allSongsFragment;
     BaseSongListFragment baseSongListFragment;
     MediaPlaybackFragment mediaPlaybackFragment;
-    private FavoriteSongsFragmentI mFavoriteSongsFragment;
+    private FavoriteSongsFragment mFavoriteSongsFragment;
     public MediaPlaybackService mediaPlaybackService;
     boolean serviceBound = false;
     private ArrayList<Song> mListSong;
     SharedPreferences sharedPreferences;
     private DrawerLayout mDrawerLayout;
     private UpdateUI mUpdateUI;
+    public static final String SHARED_PREFERENCES_NAME="com.out.activitymusic";
 
 
     public MediaPlaybackService getMediaPlaybackService() {
@@ -81,11 +83,15 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
             navigationView.setNavigationItemSelectedListener(this);
         mediaPlaybackFragment = new MediaPlaybackFragment();
         allSongsFragment = new AllSongsFragment(this, this, this.mediaPlaybackFragment);
-        mFavoriteSongsFragment = new FavoriteSongsFragmentI(mediaPlaybackService, mediaPlaybackFragment, this,this);
+        mFavoriteSongsFragment = new FavoriteSongsFragment(null, mediaPlaybackService, mediaPlaybackFragment, this, this);
+        if (mediaPlaybackService != null)
+            mFavoriteSongsFragment.setLisSong(mediaPlaybackService.getListSong());
+        Log.d("HoangCVmediaPlaybackService", "onCreate: "+mediaPlaybackService);
         allSongsFragment.setAllSong(mFavoriteSongsFragment);
         if (!isLandScape()) {
             if (isFavorite) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentSongOne, mFavoriteSongsFragment).commit();
+                mFavoriteSongsFragment.setLisSong(mListSong);
                 mDrawerLayout = findViewById(R.id.drawer_layout);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             } else {
@@ -161,8 +167,6 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
                 .addToBackStack(null)
                 .replace(R.id.fragmentSongOne, mediaPlaybackFragment)
                 .commit();
-        Log.d("mListSong123", "onclickIDisplay: "+mListSong);
-        Log.d("HoanasdagCV", "onclickIDisplay: "+song.getID());
         mediaPlaybackFragment.setListSong(mListSong);
         //mediaPlaybackFragment.setService(mediaPlaybackService);
         mediaPlaybackFragment.updateUI();
@@ -175,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
 
     @Override
     public void onclickIData(ArrayList ListSong) {
-        if (!isFavorite){
-            Log.d("HoangCVarrayList", "onclickIData: "+mListSong);
-            this.mListSong = ListSong;}
+        if (!isFavorite) {
+            this.mListSong = ListSong;
+        }
     }
 
     public void setService(MediaPlaybackService service) {
@@ -189,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
         int id = menuItem.getItemId();
         if (id == R.id.favorite) {
             isFavorite = true;
-            mFavoriteSongsFragment = new FavoriteSongsFragmentI(mediaPlaybackService, mediaPlaybackFragment, this,this);
+            mFavoriteSongsFragment = new FavoriteSongsFragment(mediaPlaybackService.getListSong(), mediaPlaybackService, mediaPlaybackFragment, this, this);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragmentSongOne, mFavoriteSongsFragment).commit();
             mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -199,16 +203,20 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
             mDrawerLayout = findViewById(R.id.drawer_layout);
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
-        mediaPlaybackService.setFavorite(isFavorite);
+        sharedPreferences =getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("is favorite",isFavorite);
+        editor.commit();
+        mediaPlaybackFragment.setIsFavorite(isFavorite);
         return true;
 
     }
 
     @Override
     public void onClickIDataFavorite(ArrayList arrayList) {
-        if (isFavorite)
-            Log.d("HoangCVarrayList", "onClickIDataFavorite: "+mListSong);
+        if (isFavorite) {
             this.mListSong = arrayList;
+        }
     }
 
     //Bkav Nhungltk
@@ -259,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
             }
         }
     }
+
 
     @Override
     public void onBackPressed() {

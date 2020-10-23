@@ -13,16 +13,20 @@ public class Song implements Serializable {
     private String Album;
 
 
+    private boolean IsFavorite;
 
-    public Song(int ID, String title, String file, String album, String artist, String duration) {
+
+
+    public Song(int ID, String title, String file, String album, String artist, String duration,boolean isFavorite) {
         this.ID = ID;
         Title = title;
         File = file;
         Artist = artist;
         Duration = duration;
         Album=album;
+        IsFavorite=isFavorite;
     }
-    public Song(int index, String title, String file, String album, String artist, int duration){}
+    public Song(int index, String title, String file, String album, String artist, int duration,boolean isFavorite){}
 
     public int getID() {
         return ID;
@@ -71,6 +75,15 @@ public class Song implements Serializable {
     public void setAlbum(String album) {
         Album = album;
     }
+    public boolean getFavorite() {
+        return IsFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        IsFavorite = favorite;
+    }
+
+
 }
 
 

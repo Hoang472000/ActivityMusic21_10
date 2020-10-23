@@ -45,7 +45,7 @@ public class MediaPlaybackService extends Service implements
     public static final String ACTION_PERVIOUS = "xxx.yyy.zzz.ACTION_PERVIOUS";
     public static final String ACTION_PLAY = "xxx.yyy.zzz.ACTION_PLAY";
     public static final String ACTION_NEXT = "xxx.yyy.zzz.ACTION_NEXT";
-    UpdateUI mUpdateUI;
+    private UpdateUI mUpdateUI;
     private MediaPlayer mMediaPlayer;
     private String mMediaFile;
     private int mResumePosition;
@@ -62,22 +62,21 @@ public class MediaPlaybackService extends Service implements
     private String mPotoMusic = "";
     private String mFile = "";
     private int mCurrentPosition = 0;
-
-    public boolean isFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
-    }
-
-    private boolean isFavorite;
+    private boolean mIsFavorite;
+    private int possition;
 
     public boolean isResume() {
         return isResume;
     }
 
 
+    public void setPossition(int possition) {
+        this.possition = possition;
+    }
+
+    public int getPossision() {
+        return possition;
+    }
     public void setResume(boolean resume) {
         isResume = resume;
     }
@@ -87,31 +86,13 @@ public class MediaPlaybackService extends Service implements
     private static final String SHARED_PREFERENCES_NAME = "com.out.activitymusic";
 
     public void setListSong(ArrayList<Song> mListSong) {
-    //    if(!isFavorite)
         this.mListSong = mListSong;
     }
-    public void setListSongFavorite(ArrayList<Song> mListSong) {
-        /*if(isFavorite)
-        this.mListSong = mListSong;*/
-    }
-
-    public boolean isLandscape() {
-        int orientation = this.getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            return true;
-        else return false;
-    }
-
 
     private ArrayList<Song> mListSong = new ArrayList<>();
 
     public ArrayList<Song> getListSong() {
         return mListSong;
-    }
-
-
-    public int getCurrentPlay() {
-        return mCurrentPlay;
     }
 
     public void setmMediaPlaybackFragment(MediaPlaybackFragment mMediaPlaybackFragment) {
@@ -134,13 +115,6 @@ public class MediaPlaybackService extends Service implements
         return mFile;
     }
 
-    public int getCurrentPossion() {
-        return mCurrentPosition;
-    }
-
-    public MediaPlayer getMediaPlayer() {
-        return mMediaPlayer;
-    }
 
     @Override
     public void onCreate() {
@@ -340,19 +314,6 @@ public class MediaPlaybackService extends Service implements
         mMediaPlayer.prepareAsync();
     }
 
-    int possition;
-
-    public void setPossition(int possition) {
-        this.possition = possition;
-    }
-
-    public int getPossision() {
-        return possition;
-    }
-
-    public void initSong(Song song) {
-    }
-
     public void nextMedia() {
         int rtpos = possition;
         if (shuffle && repeat == -1) {
@@ -368,10 +329,6 @@ public class MediaPlaybackService extends Service implements
             } catch (IOException e) {
                 e.printStackTrace();
             }
-    }
-
-    public MediaPlayer getPlayer() {
-        return mPlayer;
     }
 
     public void previousMedia() {
@@ -391,7 +348,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playMedia(Song song) throws IOException {
-        possition = song.getID() - 1;
+        possition = song.getID()-1;
         if (mMediaPlayer != null)
             mMediaPlayer.reset();
         MediaPlayer mMediaPlayer = new MediaPlayer();
@@ -419,10 +376,6 @@ public class MediaPlaybackService extends Service implements
         mUpdateUI.UpdateCurrentPossision(this.mMediaPlayer.getCurrentPosition());
         mUpdateUI.UpdateIsPlaying(this.mMediaPlayer.isPlaying());
         isPlaying = mMediaPlayer.isPlaying();
-        mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSharePreferences.edit();
-        editor.putInt("currentPosision", this.mMediaPlayer.getCurrentPosition());
-        editor.commit();
     }
 
     public Uri queryAlbumUri(String imgUri) {
@@ -445,16 +398,11 @@ public class MediaPlaybackService extends Service implements
             isResume = true;
         }
         mUpdateUI.UpdateIsPlaying(this.mMediaPlayer.isPlaying());
-        mSharePreferences = getApplicationContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mSharePreferences.edit();
-        editor.putInt("currentPosision", mMediaPlayer.getCurrentPosition());
-        editor.commit();
         showNotification(mTitle, mArtistt, mFile);
         this.stopForeground(STOP_FOREGROUND_DETACH);
     }
 
     public void resumeMedia() {
-        Log.d("mediaPlayer", "resumeMedia: " + getPlaying());
         if (!mMediaPlayer.isPlaying()) {
             mMediaPlayer.seekTo(mResumePosition);
             mMediaPlayer.start();
@@ -521,11 +469,8 @@ public class MediaPlaybackService extends Service implements
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setCustomContentView(mSmallNotification);
         builder.setCustomBigContentView(mNotification);
-        //  builder.setAutoCancel(true);//chua duoc
         builder.setContentIntent(pendingIntent);
-        //    builder.setContentIntent(PendingIntent.getActivity(this, 0, new Intent(), 0));
-
-
+  
         mNotification.setTextViewText(R.id.title_ntf, nameSong);
         mNotification.setTextViewText(R.id.artist_ntf, nameArtist);
         mNotification.setOnClickPendingIntent(R.id.previous_ntf, previousPendingIntent);

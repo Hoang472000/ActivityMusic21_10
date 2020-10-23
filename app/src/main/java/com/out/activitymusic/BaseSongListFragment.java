@@ -64,7 +64,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
 
     public void setListSongs(ArrayList<Song> listSongs) {
         this.mListSong = listSongs;
-        Log.d("mListSong123", "setListSongs:base "+ mListSong);
+        Log.d("mListSong1234", "setListSongs:base "+ mListSong);
     }
 
 
@@ -104,34 +104,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
 
         UpdateUI = new UpdateUI(getContext());
         firstUpdate();
-        if (isLandscape()) {
-            mRelativeLayout.setVisibility(View.GONE);
-            //khi xoay service null
-        } else {
-            Log.d("HoaarrayListngCV", "onCreateView: "+Ischeck);
-            if(Ischeck){
-            mRelativeLayout.setVisibility(View.VISIBLE);
-            mRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mediaPlaybackService.setListSong(mListSong);
-                    Log.d("mListSong123", "onClick:basesangservice 1 "+mListSong);
-                    mediaPlaybackFragment.setService(mediaPlaybackService);
-                    IDisplayMediaFragment.onclickIDisplay(song);
-                }
-            });}
-            else {   mRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mediaPlaybackService.setListSong(mListSong);
-                    mediaPlaybackFragment.setService(mediaPlaybackService);
-                    Log.d("mListSong123", "onClick:basesangservice 2 "+mListSong);
-                    Log.d("HoangCVpossision", "onClick: "+mediaPlaybackService.getPossision()+"  "+UpdateUI.getIndex());
-                    IDisplayMediaFragment.onclickIDisplay(mListSong.get(UpdateUI.getIndex()));
-                }
-            });}
-
-        }
+        clickRelaytiveLayout();
         onClickPause();
 
         if (mediaPlaybackService != null) {
@@ -165,6 +138,33 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                     .into(mPicture);
         }
     }
+    public void clickRelaytiveLayout(){
+        if (isLandscape()) {
+            mRelativeLayout.setVisibility(View.GONE);
+            //khi xoay service null
+        } else {
+            if(Ischeck){//chua truyen duoc bien Ischeck
+                Log.d("Ischeck", "clickRelaytiveLayout: "+Ischeck);
+                mRelativeLayout.setVisibility(View.VISIBLE);
+                mRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mediaPlaybackService.setListSong(mListSong);
+                        mediaPlaybackFragment.setService(mediaPlaybackService);
+                        IDisplayMediaFragment.onclickIDisplay(song);
+                    }
+                });}
+            else {   mRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mediaPlaybackService.setListSong(mListSong);
+                    mediaPlaybackFragment.setService(mediaPlaybackService);
+                    IDisplayMediaFragment.onclickIDisplay(mListSong.get(UpdateUI.getIndex()));
+                }
+            });}
+
+        }
+    }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -184,7 +184,8 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
             mediaPlaybackFragment.setListSong(mListSong);
             mediaPlaybackFragment.getText(song);
             mediaPlaybackService.setmMediaPlaybackFragment(mediaPlaybackFragment);
-        }
+            Log.d("mListFavoriteSongs", "onClickIItem:land "+mListSong);
+        }else{
         if (mediaPlaybackService.getPlaying()) {
             mediaPlaybackService.pauseMedia();
             try {
@@ -205,7 +206,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
         Glide.with(mInflater.getContext()).asBitmap()
                 .load(songArt)
                 .error(R.drawable.default_cover_art)
-                .into(mPicture);
+                .into(mPicture);}
         Ischeck = true;
         mediaPlaybackFragment.setIscheck(true);
         try {

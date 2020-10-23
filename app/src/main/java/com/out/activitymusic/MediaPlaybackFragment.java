@@ -3,6 +3,7 @@ package com.out.activitymusic;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
@@ -40,25 +41,26 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     ImageView mPictureSmall;
     private ImageView mMore, mImageBig;
     private ImageView mPlayPauseMedia;
-    private MediaPlaybackService mediaPlaybackService;
+    private MediaPlaybackService mMediaPlaybackService;
     private Song song;
     private ImageView mLike, mDisLike, mQueue;
     private ImageView mPlayPrevious, mPlayNext, mShuffle, mRepeat;
     private SeekBar mSeekBar;
     private TextView mArtist;
     private ArrayList<Song> mListSong;
+    private SharedPreferences mSharePreferences;
 
     public void setIscheck(boolean ischeck) {
         this.ischeck = ischeck;
     }
 
-    private boolean ischeck ;
+    private boolean ischeck;
     UpdateUI mUpdateUI;
     private boolean isIscheck1 = false;
     private View view;
     private boolean mIsFavorite;
 
-    public boolean isIsFavorite() {
+    public boolean getIsFavorite() {
         return mIsFavorite;
     }
 
@@ -91,11 +93,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
     public void setListSong(ArrayList mListSong) {
         this.mListSong = mListSong;
-        Log.d("mListSong123", "setListSong: "+mListSong);
+        Log.d("mListSong123", "setListSong: " + mListSong);
     }
 
     public void setService(MediaPlaybackService service) {
-        this.mediaPlaybackService = service;
+        this.mMediaPlaybackService = service;
     }
 
 
@@ -110,8 +112,8 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     }
 
     public void setData() {
-        mediaPlaybackService = getActivityMusic().getMediaPlaybackService();
-        Log.d("Hoanafs1gCggV", "setData: " + mediaPlaybackService);
+        mMediaPlaybackService = getActivityMusic().getMediaPlaybackService();
+        Log.d("Hoanafs1gCggV", "setData: " + mMediaPlaybackService);
     }
 
     @Override
@@ -124,7 +126,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
         super.onCreate(savedInstanceState);
         setData();
-        Log.d("MediaOnCreate", "onCreateView: " + mediaPlaybackService);
+        Log.d("MediaOnCreate", "onCreateView: " + mMediaPlaybackService);
     }
 
     @Nullable
@@ -138,13 +140,13 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         onClickItem();
         onClickSeekBar();
 
-        Log.d("mListSong123", "setListSong:coCreat "+mListSong);
+        Log.d("mListSong123", "setListSong:coCreat " + mListSong);
         if (getArguments() != null) {
             setText(getArguments());
         }
         Popmenu();
 
-        if (mediaPlaybackService != null) {
+        if (mMediaPlaybackService != null) {
             mSeekBar.setMax(mUpdateUI.getDuration());
             updateUI();
             updateTime();
@@ -152,6 +154,9 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         if (isLandscape()) {
             if (mQueue.getVisibility() == View.VISIBLE)
                 mQueue.setVisibility(View.INVISIBLE);
+          /*  ImageView.ScaleType scaletype = ImageView.ScaleType.FIT_XY;
+            scaletype = ImageView.ScaleType.FIT_CENTER;*/
+            mImageBig.setScaleType(ImageView.ScaleType.FIT_CENTER);
             updateUI();
 
         }
@@ -216,7 +221,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    mediaPlaybackService.seekToPos(progress);
+                    mMediaPlaybackService.seekToPos(progress);
                 }
                 SimpleDateFormat formatTime = new SimpleDateFormat("mm:ss");
                 mTimeSong1.setText(formatTime.format(progress));
@@ -228,7 +233,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mediaPlaybackService.getmMediaPlayer().seekTo(seekBar.getProgress());
+                mMediaPlaybackService.getmMediaPlayer().seekTo(seekBar.getProgress());
             }
         });
     }
@@ -248,7 +253,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
                 .load(songArt)
                 .error(R.drawable.default_cover_art)
                 .into(mImageBig);
-        mSeekBar.setMax(mediaPlaybackService.getDuration());
+        mSeekBar.setMax(mMediaPlaybackService.getDuration());
     }
 
     public void setText(Bundle bundle) {
@@ -297,15 +302,17 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
             case R.id.add_song_favorite:
                 ContentValues values = new ContentValues();
                 values.put(FavoriteSongsProvider.IS_FAVORITE, 2);
-                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mediaPlaybackService.getPossision()).getID(), null);
-                Toast.makeText(getContext(), "addFavorite song //" + mListSong.get(mediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
+                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mMediaPlaybackService.getPossision()).getID(), null);
+                Toast.makeText(getContext(), "addFavorite song //" + mListSong.get(mMediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
+                mMediaPlaybackService.getListSong().get(mMediaPlaybackService.getPossision()).setFavorite(true);
                 return true;
             case R.id.remove_song_favorite:
                 ContentValues values1 = new ContentValues();
                 values1.put(FavoriteSongsProvider.IS_FAVORITE, 1);
                 values1.put(FavoriteSongsProvider.COUNT_OF_PLAY, 0);
-                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mediaPlaybackService.getPossision()).getID(), null);
-                Toast.makeText(getContext(), "removeFavorite song //" + mListSong.get(mediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
+                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mMediaPlaybackService.getPossision()).getID(), null);
+                Toast.makeText(getContext(), "removeFavorite song //" + mListSong.get(mMediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
+                mMediaPlaybackService.getListSong().get(mMediaPlaybackService.getPossision()).setFavorite(false);
                 return true;
             default:
                 return false;
@@ -319,48 +326,43 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         else return false;
     }
 
-
     @Override
     public void onClick(View view) {
-        //mediaPlaybackService.setListSong(mListSong);
-        Log.d("mListSong123", "onClick: "+mListSong+"   pós:  "+mUpdateUI.getIndex());
-        mediaPlaybackService.setPossition(mUpdateUI.getIndex());
+        mSharePreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREFERENCES_NAME, MainActivity.MODE_PRIVATE);
+        mIsFavorite = mSharePreferences.getBoolean("is favorite", false);
+        Log.d("getIsFavorite", "onClick: "+getIsFavorite());
+            mMediaPlaybackService.setPossition(mUpdateUI.getIndex());
+
         switch (view.getId()) {
             case R.id.like:
+                mListSong.get(mMediaPlaybackService.getPossision()).setFavorite(true);
                 mLike.setImageResource(R.drawable.ic_thumbs_up_selected);
                 mDisLike.setImageResource(R.drawable.ic_thumbs_down_default);
                 ContentValues values = new ContentValues();
                 values.put(FavoriteSongsProvider.IS_FAVORITE, 2);
-                Log.d("ID_PROVIDER", "onClick: "+FavoriteSongsProvider.ID_PROVIDER  + "     "+ mUpdateUI.getIndex());
-                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mUpdateUI.getIndex()+1, null);
-                Toast.makeText(getContext(), "like song //" + mediaPlaybackService.getNameSong(), Toast.LENGTH_SHORT).show();
-                /*        ContentValues values = new ContentValues();
-                values.put(FavoriteSongsProvider.FAVORITE,2);
-                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI,values,FavoriteSongsProvider.ID_PROVIDER +"= "+ mMediaPlaybackService.getMinIndex(),null);
-                Toast.makeText(getContext(),  "like song //"+ mMediaPlaybackService.getNameSong(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
+                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + (mListSong.get(mMediaPlaybackService.getPossision()).getID()), null);
+                Toast.makeText(getContext(), "addFavorite song //" + mListSong.get(mMediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
                 break;
             case R.id.play_previous: {
-                mediaPlaybackService.previousMedia();
-                getText(mListSong.get(mediaPlaybackService.getPossision()));
+                mMediaPlaybackService.previousMedia();
+                getText(mListSong.get(mMediaPlaybackService.getPossision()));
                 break;
             }
             case R.id.play_pause_media: {
-                if (mediaPlaybackService.getPlaying()) {
-                    mediaPlaybackService.pauseMedia();
+                if (mMediaPlaybackService.getPlaying()) {
+                    mMediaPlaybackService.pauseMedia();
                     mPlayPauseMedia.setImageResource(R.drawable.ic_baseline_play_circle_filled_24);
-                    mediaPlaybackService.setPlaying(false);
+                    mMediaPlaybackService.setPlaying(false);
                 } else {
 
-                    mediaPlaybackService.setPlaying(true);
+                    mMediaPlaybackService.setPlaying(true);
 
-                    if (mediaPlaybackService != null) {
-                        if (mediaPlaybackService.isResume()) {
-                            mediaPlaybackService.resumeMedia();
+                    if (mMediaPlaybackService != null) {
+                        if (mMediaPlaybackService.isResume()) {
+                            mMediaPlaybackService.resumeMedia();
                         } else {
                             try {
-                                mediaPlaybackService.playMedia(mListSong.get(mUpdateUI.getIndex()));
+                                mMediaPlaybackService.playMedia(mListSong.get(mUpdateUI.getIndex()));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -369,46 +371,51 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
                     mPlayPauseMedia.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
                     setCheck(true);
                 }
-                mediaPlaybackService.showNotification(mediaPlaybackService.getNameSong(),mediaPlaybackService.getArtist(),mediaPlaybackService.getFile());
+                mMediaPlaybackService.showNotification(mMediaPlaybackService.getNameSong(), mMediaPlaybackService.getArtist(), mMediaPlaybackService.getFile());
                 break;
             }
             case R.id.play_next: {
-                mediaPlaybackService.nextMedia();
-                getText(mListSong.get(mediaPlaybackService.getPossision()));
+                mMediaPlaybackService.nextMedia();
+                Log.d("mediaPlaybackService", "onClick: " + mMediaPlaybackService.getPossision());
+                Log.d("mediaPlaybackService", "onClick: " + mMediaPlaybackService);
+                getText(mListSong.get(mMediaPlaybackService.getPossision()));
                 break;
             }
             case R.id.dislike:
+                mListSong.get(mMediaPlaybackService.getPossision()).setFavorite(false);
                 mDisLike.setImageResource(R.drawable.ic_thumbs_down_selected);
                 mLike.setImageResource(R.drawable.ic_thumbs_up_default);
-                values = new ContentValues();
-                values.put(FavoriteSongsProvider.IS_FAVORITE, 1);
-                getActivity().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mediaPlaybackService.getPossision(), null);
-                Toast.makeText(getContext(), "dislike song //" + mediaPlaybackService.getNameSong(), Toast.LENGTH_SHORT).show();
+                ContentValues values1 = new ContentValues();
+                values1.put(FavoriteSongsProvider.IS_FAVORITE, 1);
+                values1.put(FavoriteSongsProvider.COUNT_OF_PLAY, 0);
+                getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values1, FavoriteSongsProvider.ID_PROVIDER + "= " + (mListSong.get(mMediaPlaybackService.getPossision()).getID()), null);
+                Toast.makeText(getContext(), "removeFavorite song //" + mListSong.get(mMediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
+
                 break;
             case R.id.shuffle: {
-                if (!mediaPlaybackService.getShuffle()) {
+                if (!mMediaPlaybackService.getShuffle()) {
                     mShuffle.setImageResource(R.drawable.ic_play_shuffle_orange);
-                    mediaPlaybackService.setShuffle(true);
+                    mMediaPlaybackService.setShuffle(true);
                     mUpdateUI.UpdateShuffler(true);
                 } else {
                     mShuffle.setImageResource(R.drawable.ic_shuffle_white);
-                    mediaPlaybackService.setShuffle(false);
+                    mMediaPlaybackService.setShuffle(false);
                     mUpdateUI.UpdateShuffler(false);
                 }
                 break;
             }
             case R.id.repeat: {
-                if (mediaPlaybackService.getRepeat() == 1) {
+                if (mMediaPlaybackService.getRepeat() == 1) {
                     mRepeat.setImageResource(R.drawable.ic_repeat_white);
-                    mediaPlaybackService.setRepeat(-1);
+                    mMediaPlaybackService.setRepeat(-1);
                     mUpdateUI.UpdateRepeat(-1);
-                } else if (mediaPlaybackService.getRepeat() == -1) {
+                } else if (mMediaPlaybackService.getRepeat() == -1) {
                     mRepeat.setImageResource(R.drawable.ic_repeat_dark_selected);
-                    mediaPlaybackService.setRepeat(0);
+                    mMediaPlaybackService.setRepeat(0);
                     mUpdateUI.UpdateRepeat(0);
                 } else {
                     mRepeat.setImageResource(R.drawable.ic_repeat_one_song_dark);
-                    mediaPlaybackService.setRepeat(1);
+                    mMediaPlaybackService.setRepeat(1);
                     mUpdateUI.UpdateRepeat(1);
                 }
                 break;
@@ -421,12 +428,12 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     }
 
     public void updateUI() {
-        if (mediaPlaybackService != null && mSeekBar != null) {
+        if (mMediaPlaybackService != null && mSeekBar != null) {
             updateTime();
-            mSeekBar.setMax(mediaPlaybackService.getDuration());
-            mNameSong.setText(mediaPlaybackService.getNameSong());
-            mArtist.setText(mediaPlaybackService.getArtist());
-            byte[] songArt = getAlbumArt(mediaPlaybackService.getFile());
+            mSeekBar.setMax(mMediaPlaybackService.getDuration());
+            mNameSong.setText(mMediaPlaybackService.getNameSong());
+            mArtist.setText(mMediaPlaybackService.getArtist());
+            byte[] songArt = getAlbumArt(mMediaPlaybackService.getFile());
             Glide.with(view.getContext()).asBitmap()
                     .load(songArt)
                     .error(R.drawable.default_cover_art)
@@ -436,48 +443,41 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
                     .error(R.drawable.default_cover_art)
                     .into(mImageBig);
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
-            if (mediaPlaybackService.getDuration()!=0)
-                mTimeSong2.setText(formmatTime.format(mediaPlaybackService.getDuration()));
+            if (mMediaPlaybackService.getDuration() != 0)
+                mTimeSong2.setText(formmatTime.format(mMediaPlaybackService.getDuration()));
             else {
                 mTimeSong2.setText(formmatTime.format(Integer.valueOf(mListSong.get(mUpdateUI.getIndex()).getDuration())));
             }
-            if (mediaPlaybackService.getPlaying() == true) {
+            if (mMediaPlaybackService.getPlaying() == true) {
                 mPlayPauseMedia.setImageResource(R.drawable.ic_baseline_pause_circle_filled_24);
             } else {
                 mPlayPauseMedia.setImageResource(R.drawable.ic_baseline_play_circle_filled_24);
             }
 
-            if (mediaPlaybackService.getShuffle()) {
+            if (mMediaPlaybackService.getShuffle()) {
                 mShuffle.setBackgroundResource(R.drawable.ic_play_shuffle_orange);
             } else
                 mShuffle.setBackgroundResource(R.drawable.ic_shuffle_white);
 
-            if (mediaPlaybackService.getRepeat() == 0) {
+            if (mMediaPlaybackService.getRepeat() == 0) {
                 mRepeat.setBackgroundResource(R.drawable.ic_repeat_dark_selected);
-            } else if (mediaPlaybackService.getRepeat() == -1) {
+            } else if (mMediaPlaybackService.getRepeat() == -1) {
                 mRepeat.setBackgroundResource(R.drawable.ic_repeat_white);
             } else mRepeat.setBackgroundResource(R.drawable.ic_repeat_one_song_dark);
-            Log.d("HoangCVmIsFavorite", "updateUI: "+mIsFavorite);
-     /*       if (mIsFavorite) {
+            Log.d("HoangmListSongCV", "updateUI: "+mListSong);
+            Log.d("HoangmListSongCV", "updateUI: "+mListSong.get(mMediaPlaybackService.getPossision()));
+            Log.d("HoangmListSongCV", "updateUI: "+(mListSong.get(mMediaPlaybackService.getPossision()).getFavorite()));
+            if (mListSong.get(mMediaPlaybackService.getPossision()).getFavorite()) {
                 mLike.setImageResource(R.drawable.ic_thumbs_up_selected);
                 mDisLike.setImageResource(R.drawable.ic_thumbs_down_default);
             } else {
                 mLike.setImageResource(R.drawable.ic_thumbs_up_default);
                 mDisLike.setImageResource(R.drawable.ic_thumbs_down_selected);
-            }*/
+            }
 
         }
     }
 
-    public void updateLike() {
-//        for (int i=0;i<id_provider.size()-1;i++){
-//            for(int j=0;j<mListSong.size()-1;j++)
-//            if(id_provider[i]==j){
-//                mLike.setImageResource(R.drawable.ic_thumbs_up_selected);
-//                mDisLike.setImageResource(R.drawable.ic_thumbs_down_default);
-//            }
-//        }
-    }
 
     public void updateTime() {
         final Handler handler = new Handler();
@@ -487,25 +487,25 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
                 @Override
                 public void run() {
                     SimpleDateFormat formatTime = new SimpleDateFormat("mm:ss");
-                    if (!mediaPlaybackService.isResume()) {
+                    if (!mMediaPlaybackService.isResume()) {
                         mTimeSong1.setText(formatTime.format(0));
                         mSeekBar.setProgress(0);
                     } else {
-                        mTimeSong1.setText(formatTime.format(mediaPlaybackService.getCurrentStreamPosition()));
-                        mSeekBar.setProgress(mediaPlaybackService.getCurrentStreamPosition());
+                        mTimeSong1.setText(formatTime.format(mMediaPlaybackService.getCurrentStreamPosition()));
+                        mSeekBar.setProgress(mMediaPlaybackService.getCurrentStreamPosition());
                     }
 
-                    if (mediaPlaybackService.isPlaying()) {
-                        mTimeSong1.setText(formatTime.format(mediaPlaybackService.getCurrentStreamPosition()));
-                        mSeekBar.setProgress(mediaPlaybackService.getCurrentStreamPosition());
+                    if (mMediaPlaybackService.isPlaying()) {
+                        mTimeSong1.setText(formatTime.format(mMediaPlaybackService.getCurrentStreamPosition()));
+                        mSeekBar.setProgress(mMediaPlaybackService.getCurrentStreamPosition());
                     }
-                    mediaPlaybackService.getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    mMediaPlaybackService.getmMediaPlayer().setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
                             try {
-                                if (mediaPlaybackService.getPlaying() == false) {
-                                } else mediaPlaybackService.onCompletionSong();
-                                mSeekBar.setMax(mediaPlaybackService.getDuration());
+                                if (mMediaPlaybackService.getPlaying() == false) {
+                                } else mMediaPlaybackService.onCompletionSong();
+                                mSeekBar.setMax(mMediaPlaybackService.getDuration());
 //                                updateUI();
                             } catch (IOException e) {
                                 e.printStackTrace();

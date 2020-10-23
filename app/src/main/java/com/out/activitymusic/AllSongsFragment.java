@@ -115,7 +115,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
         String album = "";
         String artist = "";
         String duration = "";
-        Song song = new Song(id, title, file, album, artist, duration);
+        Song song = new Song(id, title, file, album, artist, duration,false);
         if (data != null && data.getCount() > 0) {
             data.moveToFirst();
             do {
@@ -131,9 +131,8 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 album = song.getAlbum();
                 artist = song.getArtist();
                 duration = song.getDuration();
-                mListSongs.add(new Song(id, title, file, album, artist, duration));
+                mListSongs.add(new Song(id, title, file, album, artist, duration,false));
 
-                Log.d("H1111oangCV", "onLoadFinished: "+isCreate);
 
                 if (isCreate == false) {
                     ContentValues values = new ContentValues();
@@ -146,28 +145,31 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                     editor.putBoolean("create_db", true);
                     editor.commit();
                 }
-
             } while (data.moveToNext());
         }
+        FavoriteSongsFragment favoriteSongsFragment = new FavoriteSongsFragment();
+        favoriteSongsFragment.setLisSong(mListSong);
         setListSongs(mListSongs);
-        //LinearSmall(mListSongs);
         Log.d("HoangCVmediaf", "onLoadFinished: "+mediaPlaybackFragment);
         mListAdapter=new ListAdapter(getContext(), mListSongs,this);
         mediaPlaybackFragment.setListSong(mListSongs);
         IDataFragment.onclickIData(mListSongs);
-        IDataFavoriteAndAllSong.onClickIDataFaboriteAndAllSong(mListSongs);
+       // IDataFavoriteAndAllSong.onClickIDataFaboriteAndAllSong(mListSongs);
         mediaPlaybackFragment.setService(mediaPlaybackService);
         setAdapter(mListAdapter);
         setListAdapter(mListAdapter);
         mListAdapter.setService(mediaPlaybackService);
         if(mediaPlaybackService!=null) mediaPlaybackService.setListSong(mListSongs);
         if(isLandscape()){
+
+            Log.d("favoriteSongsFragment", "onLoadFinished: "+ mListSongs);
+            favoriteSongsFragment.setLisSong(mListSong);
             setListSongs(mListSongs);
             mListAdapter.setService(mediaPlaybackService);
             mediaPlaybackFragment.setService(mediaPlaybackService);
             mediaPlaybackFragment.setListSong(mListSongs);
             mediaPlaybackFragment.updateTime();
-            IDataFavoriteAndAllSong.onClickIDataFaboriteAndAllSong(mListSongs);
+           // IDataFavoriteAndAllSong.onClickIDataFaboriteAndAllSong(mListSongs);
             if(mediaPlaybackService!=null)
             mediaPlaybackService.setListSong(mListSongs);
             //khi xoay truyen duoc listsong sang service

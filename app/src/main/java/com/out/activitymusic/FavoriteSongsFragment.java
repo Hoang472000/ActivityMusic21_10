@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import Service.MediaPlaybackService;
 
-public class FavoriteSongsFragmentI extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IDataFavoriteAndAllSong {
+public class FavoriteSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IDataFavoriteAndAllSong {
     private static final int LOADER_ID = 1;
     private ArrayList<Song> mListAllSong;
     private ListAdapter mListAdapter;
@@ -32,14 +32,18 @@ public class FavoriteSongsFragmentI extends BaseSongListFragment implements Load
     IDataFavorite iDataFavorite;
     private int id,id_provider;
 
-    public FavoriteSongsFragmentI(MediaPlaybackService service, MediaPlaybackFragment mediaPlaybackFragment, IDisplayMediaFragment IDisplayMediaFragment, IDataFavorite iDataFavorite) {
+    public FavoriteSongsFragment(ArrayList arrayList, MediaPlaybackService service, MediaPlaybackFragment mediaPlaybackFragment, IDisplayMediaFragment IDisplayMediaFragment, IDataFavorite iDataFavorite) {
         super(IDisplayMediaFragment, mediaPlaybackFragment);
+        this.mListAllSong=arrayList;
         this.mediaPlaybackService = service;
         this.mediaPlaybackFragment = mediaPlaybackFragment;
         this.iDataFavorite=iDataFavorite;
     }
 
-    public FavoriteSongsFragmentI() {
+    public FavoriteSongsFragment() {
+    }
+    public void setLisSong(ArrayList mListAllSong){
+        this.mListAllSong=mListAllSong;
     }
 
 
@@ -59,44 +63,44 @@ public class FavoriteSongsFragmentI extends BaseSongListFragment implements Load
         String URL = "content://com.out.activitymusic.database.FavoriteSongsProvider";
         Uri uriSongs = Uri.parse(URL);
         String selection = FavoriteSongsProvider.IS_FAVORITE + "==2";
-        return new CursorLoader(getContext(), uriSongs, null, selection, null, null);
+        CursorLoader cursorLoader = new CursorLoader(getContext(), uriSongs, null, selection, null, null);
+        return cursorLoader;
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
-        if (mediaPlaybackService != null) {
-            mListAllSong = mediaPlaybackService.getListSong();
-        }
-        ArrayList<Integer> arrayList = new ArrayList<>();
+        Log.d("favoriteSongsFragment", "onLoadFinished: "+mListAllSong);
+        if(mListAllSong!=null){
         Song song = null;
-        int dem = 0;
+        int dem = 1;
         if (data.moveToFirst()) {
             do {
                 for (int i = 0; i < mListAllSong.size(); i++) {
                     if (mListAllSong.get(i).getID() == data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))) {
                         Log.d("song F", data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER)) + "//" + mListAllSong.get(i).getID());
-                        song = new Song(dem, mListAllSong.get(i).getTitle(), mListAllSong.get(i).getFile(), mListAllSong.get(i).getAlbum(), mListAllSong.get(i).getArtist(), mListAllSong.get(i).getDuration());
+                        song = new Song(dem, mListAllSong.get(i).getTitle(), mListAllSong.get(i).getFile(), mListAllSong.get(i).getAlbum(), mListAllSong.get(i).getArtist(), mListAllSong.get(i).getDuration(),true);
                         dem++;
                         mListFavoriteSongs.add(song);
                     }
                 }
             } while (data.moveToNext());
-        }
+        }}
+        else
+            mListFavoriteSongs=mediaPlaybackService.getListSong();
         setListSongs(mListFavoriteSongs);
         mediaPlaybackFragment.setListSong(mListFavoriteSongs);
         mediaPlaybackFragment.setService(mediaPlaybackService);
         mListAdapter = new ListAdapter(getContext(), mListFavoriteSongs, this);
         setAdapter(mListAdapter);
         iDataFavorite.onClickIDataFavorite(mListFavoriteSongs);
-       // mediaPlaybackService.setListSong(mListAllSong);
         mediaPlaybackService.setListSong(mListFavoriteSongs);
-        mediaPlaybackService.setListSongFavorite(mListFavoriteSongs);
         setListAdapter(mListAdapter);
         mListAdapter.setService(mediaPlaybackService);
         if (isLandscape()) {
+            Log.d("mListFavoriteSongs", "onLoadFinished: "+mListFavoriteSongs);
+            Log.d("mListFavoriteSongs", "onLoadFinished: "+mListAllSong);
             setListSongs(mListFavoriteSongs);
-            mediaPlaybackService.setListSongFavorite(mListFavoriteSongs);
             mListAdapter.setService(mediaPlaybackService);
             mediaPlaybackFragment.setService(mediaPlaybackService);
             mediaPlaybackFragment.setListSong(mListFavoriteSongs);

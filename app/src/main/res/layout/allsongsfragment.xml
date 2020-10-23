@@ -15,7 +15,7 @@
         <RelativeLayout
             android:id="@+id/bottom"
             android:layout_width="match_parent"
-            android:layout_height="70sp"
+            android:layout_height="65dp"
             android:visibility="visible"
             android:background="@drawable/test"
             android:elevation="15dp"
@@ -38,12 +38,13 @@
 
                         <TextView
                             android:id="@+id/name_song"
-                            android:textSize="18dp"
                             android:layout_width="230dp"
-                            android:layout_height="35sp"
+                            android:layout_height="25dp"
                             android:text="TextView"
-                            android:paddingTop="10dp"
+                            android:textSize="18dp"
+                            android:layout_marginTop="10dp"
                             android:paddingLeft="5dp"
+                            android:paddingTop="3dp"
                             android:maxLines="1"
                             android:ellipsize="end"
                             android:textColor="#000000"/>
