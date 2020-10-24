@@ -70,6 +70,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
+        ArrayList<Integer> id=new ArrayList<>();
         Log.d("favoriteSongsFragment", "onLoadFinished: "+mListAllSong);
         if(mListAllSong!=null){
         Song song = null;
@@ -81,6 +82,8 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
                         Log.d("song F", data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER)) + "//" + mListAllSong.get(i).getID());
                         song = new Song(dem, mListAllSong.get(i).getTitle(), mListAllSong.get(i).getFile(), mListAllSong.get(i).getAlbum(), mListAllSong.get(i).getArtist(), mListAllSong.get(i).getDuration(),true);
                         dem++;
+                        id.add(i);
+                        mediaPlaybackService.setFavoriteID(id,true);
                         mListFavoriteSongs.add(song);
                     }
                 }
@@ -93,6 +96,7 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         mediaPlaybackFragment.setService(mediaPlaybackService);
         mListAdapter = new ListAdapter(getContext(), mListFavoriteSongs, this);
         setAdapter(mListAdapter);
+        mediaPlaybackFragment.setListFavoriteSong(mListFavoriteSongs);
         iDataFavorite.onClickIDataFavorite(mListFavoriteSongs);
         mediaPlaybackService.setListSong(mListFavoriteSongs);
         setListAdapter(mListAdapter);

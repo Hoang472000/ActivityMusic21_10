@@ -64,6 +64,7 @@ public class MediaPlaybackService extends Service implements
     private int mCurrentPosition = 0;
     private boolean mIsFavorite;
     private int possition;
+    private ArrayList<Integer> favoriteID;
 
     public boolean isResume() {
         return isResume;
@@ -82,6 +83,13 @@ public class MediaPlaybackService extends Service implements
     }
 
     private boolean isResume;
+    public ArrayList<Integer> getfavoriteID(){
+        return favoriteID;
+    }
+    public void setFavoriteID(ArrayList<Integer> favoriteID,boolean mIsFavorite){
+        this.favoriteID=favoriteID;
+        this.mIsFavorite=mIsFavorite;
+    }
     private SharedPreferences mSharePreferences;
     private static final String SHARED_PREFERENCES_NAME = "com.out.activitymusic";
 

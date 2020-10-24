@@ -71,7 +71,6 @@ public class FavoriteSongsProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-
         FavoriteSongsDatabase mFavoriteSongsDatabase = new FavoriteSongsDatabase(getContext());
         database = mFavoriteSongsDatabase.getWritableDatabase();
         if (database == null)
@@ -123,7 +122,6 @@ public class FavoriteSongsProvider extends ContentProvider {
             return newUri;
         }
         throw new SQLException("Failed to add a record into " + uri);
-
     }
 
     @Override
@@ -171,4 +169,5 @@ public class FavoriteSongsProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri,null);
         return count;
     }
+
 }

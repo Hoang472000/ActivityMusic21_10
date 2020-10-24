@@ -87,7 +87,6 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("nhungltk12", "onCreateView: ");
         mInflater = inflater.inflate(R.layout.allsongsfragment, container, false);
         init();
         //Bkav Nhungltk: doan nay nghia la sao

@@ -48,6 +48,17 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     private SeekBar mSeekBar;
     private TextView mArtist;
     private ArrayList<Song> mListSong;
+    private ArrayList<Integer> favoriteID;
+
+    public ArrayList<Song> getListFavoriteSong() {
+        return mListFavoriteSong;
+    }
+
+    public void setListFavoriteSong(ArrayList<Song> mListFavoriteSong) {
+        this.mListFavoriteSong = mListFavoriteSong;
+    }
+
+    private ArrayList<Song> mListFavoriteSong;
     private SharedPreferences mSharePreferences;
 
     public void setIscheck(boolean ischeck) {
@@ -93,7 +104,6 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
     public void setListSong(ArrayList mListSong) {
         this.mListSong = mListSong;
-        Log.d("mListSong123", "setListSong: " + mListSong);
     }
 
     public void setService(MediaPlaybackService service) {
@@ -328,10 +338,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
     @Override
     public void onClick(View view) {
-        mSharePreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREFERENCES_NAME, MainActivity.MODE_PRIVATE);
-        mIsFavorite = mSharePreferences.getBoolean("is favorite", false);
-        Log.d("getIsFavorite", "onClick: "+getIsFavorite());
-            mMediaPlaybackService.setPossition(mUpdateUI.getIndex());
+        mMediaPlaybackService.setPossition(mUpdateUI.getIndex());
 
         switch (view.getId()) {
             case R.id.like:
@@ -427,9 +434,17 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         updateUI();
     }
 
+    public void checkFavorite() {
+        if (mMediaPlaybackService != null)
+            if (mListSong.get(mMediaPlaybackService.getPossision()).getFavorite())
+                mIsFavorite = true;
+            else mIsFavorite = false;
+    }
+
     public void updateUI() {
         if (mMediaPlaybackService != null && mSeekBar != null) {
             updateTime();
+            checkFavorite();
             mSeekBar.setMax(mMediaPlaybackService.getDuration());
             mNameSong.setText(mMediaPlaybackService.getNameSong());
             mArtist.setText(mMediaPlaybackService.getArtist());
@@ -464,10 +479,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
             } else if (mMediaPlaybackService.getRepeat() == -1) {
                 mRepeat.setBackgroundResource(R.drawable.ic_repeat_white);
             } else mRepeat.setBackgroundResource(R.drawable.ic_repeat_one_song_dark);
-            Log.d("HoangmListSongCV", "updateUI: "+mListSong);
-            Log.d("HoangmListSongCV", "updateUI: "+mListSong.get(mMediaPlaybackService.getPossision()));
-            Log.d("HoangmListSongCV", "updateUI: "+(mListSong.get(mMediaPlaybackService.getPossision()).getFavorite()));
-            if (mListSong.get(mMediaPlaybackService.getPossision()).getFavorite()) {
+            if (mIsFavorite) {
                 mLike.setImageResource(R.drawable.ic_thumbs_up_selected);
                 mDisLike.setImageResource(R.drawable.ic_thumbs_down_default);
             } else {

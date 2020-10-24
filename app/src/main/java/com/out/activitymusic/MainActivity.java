@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("is favorite",isFavorite);
         editor.commit();
-        mediaPlaybackFragment.setIsFavorite(isFavorite);
         return true;
 
     }
