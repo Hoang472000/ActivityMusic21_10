@@ -64,7 +64,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
 
     public void setListSongs(ArrayList<Song> listSongs) {
         this.mListSong = listSongs;
-        Log.d("mListSong1234", "setListSongs:base "+ mListSong);
+        Log.d("mListSong1234", "setListSongs:base " + mListSong);
     }
 
 
@@ -111,10 +111,12 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                 mediaPlaybackFragment.setService(mediaPlaybackService);
             }
         }
+        if(!isLandscape())
         updateUI();
         return mInflater;
     }
-    public void init(){
+
+    public void init() {
         mRecyclerView = mInflater.findViewById(R.id.recycle_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRelativeLayout = mInflater.findViewById(R.id.bottom);
@@ -125,7 +127,8 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
         mMusicPop = mInflater.findViewById(R.id.music_pop);
         mRecyclerView.setHasFixedSize(true);
     }
-    public void firstUpdate(){
+
+    public void firstUpdate() {
         index = UpdateUI.getIndex();
         if (UpdateUI.getAlbum() != null) {
             mNameSong.setText(UpdateUI.getTitle());
@@ -133,17 +136,18 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
             byte[] songArt = getAlbumArt(UpdateUI.getFile());
             Glide.with(mInflater.getContext()).asBitmap()
                     .load(songArt)
-                    .error(R.drawable.default_cover_art)
+                    .error(R.drawable.icon_music_replace)
                     .into(mPicture);
         }
     }
-    public void clickRelaytiveLayout(){
+
+    public void clickRelaytiveLayout() {
         if (isLandscape()) {
             mRelativeLayout.setVisibility(View.GONE);
             //khi xoay service null
         } else {
-            if(Ischeck){//chua truyen duoc bien Ischeck
-                Log.d("Ischeck", "clickRelaytiveLayout: "+Ischeck);
+            if (Ischeck) {//chua truyen duoc bien Ischeck
+                Log.d("Ischeck", "clickRelaytiveLayout: " + Ischeck);
                 mRelativeLayout.setVisibility(View.VISIBLE);
                 mRelativeLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -152,18 +156,21 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                         mediaPlaybackFragment.setService(mediaPlaybackService);
                         IDisplayMediaFragment.onclickIDisplay(song);
                     }
-                });}
-            else {   mRelativeLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mediaPlaybackService.setListSong(mListSong);
-                    mediaPlaybackFragment.setService(mediaPlaybackService);
-                    IDisplayMediaFragment.onclickIDisplay(mListSong.get(UpdateUI.getIndex()));
-                }
-            });}
+                });
+            } else {
+                mRelativeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mediaPlaybackService.setListSong(mListSong);
+                        mediaPlaybackFragment.setService(mediaPlaybackService);
+                        IDisplayMediaFragment.onclickIDisplay(mListSong.get(UpdateUI.getIndex()));
+                    }
+                });
+            }
 
         }
     }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -178,34 +185,40 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
     @Override
     public void onClickIItem(Song song) {
         this.song = song;
+        mediaPlaybackService.setmMediaPlaybackFragment(mediaPlaybackFragment);
+        mediaPlaybackFragment.setBaseSongListFragment(this);
+        mediaPlaybackService.setBaseSongListFragment(this);
         if (isLandscape()) {
             mediaPlaybackFragment.setService(mediaPlaybackService);
             mediaPlaybackFragment.setListSong(mListSong);
+            mediaPlaybackFragment.setBaseSongListFragment(this);
             mediaPlaybackFragment.getText(song);
             mediaPlaybackService.setmMediaPlaybackFragment(mediaPlaybackFragment);
-            Log.d("mListFavoriteSongs", "onClickIItem:land "+mListSong);
-        }else{
-        if (mediaPlaybackService.getPlaying()) {
-            mediaPlaybackService.pauseMedia();
-            try {
-                mediaPlaybackService.playMedia(song);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            mediaPlaybackService.setBaseSongListFragment(this);
+            Log.d("mListFavoriteSongs", "onClickIItem:land " + mListSong);
         } else {
-            try {
-                mediaPlaybackService.playMedia(song);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (mediaPlaybackService.getPlaying()) {
+                mediaPlaybackService.pauseMedia();
+                try {
+                    mediaPlaybackService.playMedia(song);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    mediaPlaybackService.playMedia(song);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            mNameSong.setText(song.getTitle());
+            mArtist.setText(song.getArtist());
+            byte[] songArt = getAlbumArt(song.getFile());
+            Glide.with(mInflater.getContext()).asBitmap()
+                    .load(songArt)
+                    .error(R.drawable.icon_music_replace)
+                    .into(mPicture);
         }
-        mNameSong.setText(song.getTitle());
-        mArtist.setText(song.getArtist());
-        byte[] songArt = getAlbumArt(song.getFile());
-        Glide.with(mInflater.getContext()).asBitmap()
-                .load(songArt)
-                .error(R.drawable.default_cover_art)
-                .into(mPicture);}
         Ischeck = true;
         mediaPlaybackFragment.setIscheck(true);
         try {
@@ -238,7 +251,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(mListAdapter!=null) mListAdapter.notifyDataSetChanged();
+        if (mListAdapter != null) mListAdapter.notifyDataSetChanged();
     }
 
     public boolean isLandscape() {
@@ -292,8 +305,8 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                 updateUI();
             }
         });
-        if(mListAdapter!=null)
-        mListAdapter.notifyDataSetChanged();
+        if (mListAdapter != null)
+            mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -338,7 +351,7 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                 byte[] songArt = getAlbumArt(mediaPlaybackService.getFile());
                 Glide.with(mInflater.getContext()).asBitmap()
                         .load(songArt)
-                        .error(R.drawable.default_cover_art)
+                        .error(R.drawable.icon_music_replace)
                         .into(mPicture);
                 mNameSong.setText(mediaPlaybackService.getNameSong());
                 mArtist.setText(mediaPlaybackService.getArtist());
@@ -352,7 +365,10 @@ public class BaseSongListFragment extends Fragment implements IItemClickListener
                 mPlayPause.setImageResource(R.drawable.ic_pause_black_large);
             else mPlayPause.setImageResource(R.drawable.ic_media_play_light);
         }
-        if(mListAdapter!=null) mListAdapter.notifyDataSetChanged();
+        if (mListAdapter != null) mListAdapter.notifyDataSetChanged();
+    }
+    public void updateUIWhenLandScape(){
+        if (mListAdapter != null) mListAdapter.notifyDataSetChanged();
     }
 }
 

@@ -26,13 +26,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.out.activitymusic.database.FavoriteSongsProvider;
+import com.out.activitymusic.interfaces.ITransmissionAllSongsFragment;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import Service.MediaPlaybackService;
 
@@ -49,6 +52,8 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     private TextView mArtist;
     private ArrayList<Song> mListSong;
     private ArrayList<Integer> favoriteID;
+    private BaseSongListFragment baseSongListFragment;
+    private ITransmissionAllSongsFragment iTransmissionAllSongsFragment;
 
     public ArrayList<Song> getListFavoriteSong() {
         return mListFavoriteSong;
@@ -57,6 +62,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     public void setListFavoriteSong(ArrayList<Song> mListFavoriteSong) {
         this.mListFavoriteSong = mListFavoriteSong;
     }
+
+    public void setBaseSongListFragment(BaseSongListFragment baseSongListFragment) {
+        this.baseSongListFragment = baseSongListFragment;
+    }
+
 
     private ArrayList<Song> mListFavoriteSong;
     private SharedPreferences mSharePreferences;
@@ -71,19 +81,19 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
     private View view;
     private boolean mIsFavorite;
 
-    public boolean getIsFavorite() {
+   /* public boolean getIsFavorite() {
         return mIsFavorite;
     }
 
     public void setIsFavorite(boolean mIsFavorite) {
         this.mIsFavorite = mIsFavorite;
-    }
+    }*/
 
     private ListAdapter mListAdapter;
 
     public MediaPlaybackFragment newInstance(Song song) {
         SimpleDateFormat formatTime = new SimpleDateFormat("mm:ss");
-        MediaPlaybackFragment fragment = new MediaPlaybackFragment();
+        MediaPlaybackFragment fragment = new MediaPlaybackFragment(this.iTransmissionAllSongsFragment);
         Bundle bundle = new Bundle();
         bundle.putSerializable("audio", song);
         bundle.putString("song", song.getTitle());
@@ -110,8 +120,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         this.mMediaPlaybackService = service;
     }
 
+    public MediaPlaybackFragment(ITransmissionAllSongsFragment iTransmissionAllSongsFragment) {
+        this.iTransmissionAllSongsFragment = iTransmissionAllSongsFragment;
+    }
+    public MediaPlaybackFragment(){
 
-    public MediaPlaybackFragment() {
     }
 
     private MainActivity getActivityMusic() {
@@ -123,7 +136,6 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
     public void setData() {
         mMediaPlaybackService = getActivityMusic().getMediaPlaybackService();
-        Log.d("Hoanafs1gCggV", "setData: " + mMediaPlaybackService);
     }
 
     @Override
@@ -136,7 +148,6 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
 
         super.onCreate(savedInstanceState);
         setData();
-        Log.d("MediaOnCreate", "onCreateView: " + mMediaPlaybackService);
     }
 
     @Nullable
@@ -149,8 +160,6 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         firstUpdate();
         onClickItem();
         onClickSeekBar();
-
-        Log.d("mListSong123", "setListSong:coCreat " + mListSong);
         if (getArguments() != null) {
             setText(getArguments());
         }
@@ -164,11 +173,8 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         if (isLandscape()) {
             if (mQueue.getVisibility() == View.VISIBLE)
                 mQueue.setVisibility(View.INVISIBLE);
-          /*  ImageView.ScaleType scaletype = ImageView.ScaleType.FIT_XY;
-            scaletype = ImageView.ScaleType.FIT_CENTER;*/
             mImageBig.setScaleType(ImageView.ScaleType.FIT_CENTER);
             updateUI();
-
         }
         return view;
     }
@@ -200,6 +206,13 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         mDisLike.setOnClickListener(this);
         mShuffle.setOnClickListener(this);
         mRepeat.setOnClickListener(this);
+        mQueue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iTransmissionAllSongsFragment.onClickTransmissionAllSongsFragment();
+
+            }
+        });
     }
 
     public void firstUpdate() {
@@ -257,11 +270,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         byte[] songArt = getAlbumArt(song.getFile());
         Glide.with(view.getContext()).asBitmap()
                 .load(songArt)
-                .error(R.drawable.default_cover_art)
+                .error(R.drawable.icon_music_replace)
                 .into(mPictureSmall);
         Glide.with(view.getContext()).asBitmap()
                 .load(songArt)
-                .error(R.drawable.default_cover_art)
+                .error(R.drawable.icon_music_replace)
                 .into(mImageBig);
         mSeekBar.setMax(mMediaPlaybackService.getDuration());
     }
@@ -273,11 +286,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         byte[] songArt = getAlbumArt(bundle.getString("song2"));
         Glide.with(view.getContext()).asBitmap()
                 .load(songArt)
-                .error(R.drawable.default_cover_art)
+                .error(R.drawable.icon_music_replace)
                 .into(mPictureSmall);
         Glide.with(view.getContext()).asBitmap()
                 .load(songArt)
-                .error(R.drawable.default_cover_art)
+                .error(R.drawable.icon_music_replace)
                 .into(mImageBig);
     }
 
@@ -312,6 +325,7 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
             case R.id.add_song_favorite:
                 ContentValues values = new ContentValues();
                 values.put(FavoriteSongsProvider.IS_FAVORITE, 2);
+                Log.d("values", "onMenuItemClick: " + values);
                 getContext().getContentResolver().update(FavoriteSongsProvider.CONTENT_URI, values, FavoriteSongsProvider.ID_PROVIDER + "= " + mListSong.get(mMediaPlaybackService.getPossision()).getID(), null);
                 Toast.makeText(getContext(), "addFavorite song //" + mListSong.get(mMediaPlaybackService.getPossision()).getTitle(), Toast.LENGTH_SHORT).show();
                 mMediaPlaybackService.getListSong().get(mMediaPlaybackService.getPossision()).setFavorite(true);
@@ -432,9 +446,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
         }
         isIscheck1 = true;
         updateUI();
+
     }
 
     public void checkFavorite() {
+        Log.d("checkFavorite", "checkFavorite: " + mListSong);
         if (mMediaPlaybackService != null)
             if (mListSong.get(mMediaPlaybackService.getPossision()).getFavorite())
                 mIsFavorite = true;
@@ -451,11 +467,11 @@ public class MediaPlaybackFragment extends Fragment implements PopupMenu.OnMenuI
             byte[] songArt = getAlbumArt(mMediaPlaybackService.getFile());
             Glide.with(view.getContext()).asBitmap()
                     .load(songArt)
-                    .error(R.drawable.default_cover_art)
+                    .error(R.drawable.icon_music_replace)
                     .into(mPictureSmall);
             Glide.with(view.getContext()).asBitmap()
                     .load(songArt)
-                    .error(R.drawable.default_cover_art)
+                    .error(R.drawable.icon_music_replace)
                     .into(mImageBig);
             SimpleDateFormat formmatTime = new SimpleDateFormat("mm:ss");
             if (mMediaPlaybackService.getDuration() != 0)

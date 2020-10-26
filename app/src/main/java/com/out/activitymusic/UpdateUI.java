@@ -3,6 +3,8 @@ package com.out.activitymusic;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
 public class UpdateUI {
     private final String STORAGE = " com.valdioveliu.valdio.audioplayer.STORAGE";
     private SharedPreferences preferences;
@@ -155,6 +157,16 @@ public class UpdateUI {
         Boolean shuffler = preferences.getBoolean("shuffler", false);
         return shuffler;
     }
-
+    public  void UpdateSizeListAllSongs(int size){
+        preferences= context.getSharedPreferences(STORAGE,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= preferences.edit();
+        editor.putInt("size",size);
+        editor.apply();
+    }
+    public Integer getSizeListAllSongs(){
+        preferences= context.getSharedPreferences(STORAGE,context.MODE_PRIVATE);
+        int size=preferences.getInt("size",0);
+        return size;
+    }
 
 }

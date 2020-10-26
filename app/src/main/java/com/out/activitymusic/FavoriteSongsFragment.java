@@ -24,26 +24,28 @@ import java.util.ArrayList;
 
 import Service.MediaPlaybackService;
 
-public class FavoriteSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IDataFavoriteAndAllSong {
+public class FavoriteSongsFragment extends BaseSongListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
     private ArrayList<Song> mListAllSong;
     private ListAdapter mListAdapter;
     MediaPlaybackFragment mediaPlaybackFragment;
     IDataFavorite iDataFavorite;
-    private int id,id_provider;
+    private int id, id_provider;
+    private UpdateUI mUpdateUI;
 
     public FavoriteSongsFragment(ArrayList arrayList, MediaPlaybackService service, MediaPlaybackFragment mediaPlaybackFragment, IDisplayMediaFragment IDisplayMediaFragment, IDataFavorite iDataFavorite) {
         super(IDisplayMediaFragment, mediaPlaybackFragment);
-        this.mListAllSong=arrayList;
+        this.mListAllSong = arrayList;
         this.mediaPlaybackService = service;
         this.mediaPlaybackFragment = mediaPlaybackFragment;
-        this.iDataFavorite=iDataFavorite;
+        this.iDataFavorite = iDataFavorite;
     }
 
     public FavoriteSongsFragment() {
     }
-    public void setLisSong(ArrayList mListAllSong){
-        this.mListAllSong=mListAllSong;
+
+    public void setLisSong(ArrayList mListAllSong) {
+        this.mListAllSong = mListAllSong;
     }
 
 
@@ -51,9 +53,11 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LoaderManager.getInstance(this).initLoader(LOADER_ID, null, this);
+        mUpdateUI= new UpdateUI(getContext());
         return super.onCreateView(inflater, container, savedInstanceState);
     }
-    public void getData(){
+
+    public void getData() {
 
     }
 
@@ -70,27 +74,27 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         ArrayList<Song> mListFavoriteSongs = new ArrayList<>();
-        ArrayList<Integer> id=new ArrayList<>();
-        Log.d("favoriteSongsFragment", "onLoadFinished: "+mListAllSong);
-        if(mListAllSong!=null){
-        Song song = null;
-        int dem = 1;
-        if (data.moveToFirst()) {
-            do {
-                for (int i = 0; i < mListAllSong.size(); i++) {
-                    if (mListAllSong.get(i).getID() == data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))) {
-                        Log.d("song F", data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER)) + "//" + mListAllSong.get(i).getID());
-                        song = new Song(dem, mListAllSong.get(i).getTitle(), mListAllSong.get(i).getFile(), mListAllSong.get(i).getAlbum(), mListAllSong.get(i).getArtist(), mListAllSong.get(i).getDuration(),true);
-                        dem++;
-                        id.add(i);
-                        mediaPlaybackService.setFavoriteID(id,true);
-                        mListFavoriteSongs.add(song);
+        ArrayList<Integer> id = new ArrayList<>();
+        Log.d("favoriteSongsFragment", "onLoadFinished: " + mListAllSong);
+        if (mListAllSong.size()==mUpdateUI.getSizeListAllSongs()) {
+            Song song = null;
+            int dem = 1;
+            if (data.moveToFirst()) {
+                do {
+                    for (int i = 0; i < mListAllSong.size(); i++) {
+                        if (mListAllSong.get(i).getID() == data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER))) {
+                            Log.d("song F", data.getInt(data.getColumnIndex(FavoriteSongsProvider.ID_PROVIDER)) + "//" + mListAllSong.get(i).getID());
+                            song = new Song(dem, mListAllSong.get(i).getTitle(), mListAllSong.get(i).getFile(), mListAllSong.get(i).getAlbum(), mListAllSong.get(i).getArtist(), mListAllSong.get(i).getDuration(), true);
+                            dem++;
+                            id.add(i);
+                            mediaPlaybackService.setFavoriteID(id, true);
+                            mListFavoriteSongs.add(song);
+                        }
                     }
-                }
-            } while (data.moveToNext());
-        }}
-        else
-            mListFavoriteSongs=mediaPlaybackService.getListSong();
+                } while (data.moveToNext());
+            }
+        } else
+            mListFavoriteSongs = mediaPlaybackService.getListSong();
         setListSongs(mListFavoriteSongs);
         mediaPlaybackFragment.setListSong(mListFavoriteSongs);
         mediaPlaybackFragment.setService(mediaPlaybackService);
@@ -102,8 +106,8 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         setListAdapter(mListAdapter);
         mListAdapter.setService(mediaPlaybackService);
         if (isLandscape()) {
-            Log.d("mListFavoriteSongs", "onLoadFinished: "+mListFavoriteSongs);
-            Log.d("mListFavoriteSongs", "onLoadFinished: "+mListAllSong);
+            Log.d("mListFavoriteSongs", "onLoadFinished: " + mListFavoriteSongs);
+            Log.d("mListFavoriteSongs", "onLoadFinished: " + mListAllSong);
             setListSongs(mListFavoriteSongs);
             mListAdapter.setService(mediaPlaybackService);
             mediaPlaybackFragment.setService(mediaPlaybackService);
@@ -124,8 +128,5 @@ public class FavoriteSongsFragment extends BaseSongListFragment implements Loade
         else return false;
     }
 
-    @Override
-    public void onClickIDataFaboriteAndAllSong(ArrayList mListSong) {
-        this.mListAllSong = mListSong;
-    }
+
 }

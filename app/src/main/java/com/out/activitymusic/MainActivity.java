@@ -27,14 +27,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.out.activitymusic.interfaces.IDataFavorite;
+import com.out.activitymusic.interfaces.IDataFavoriteAndAllSong;
 import com.out.activitymusic.interfaces.IDataFragment;
 import com.out.activitymusic.interfaces.IDisplayMediaFragment;
+import com.out.activitymusic.interfaces.ITransmissionAllSongsFragment;
 
 import java.util.ArrayList;
 
 import Service.MediaPlaybackService;
 
-public class MainActivity extends AppCompatActivity implements IDisplayMediaFragment, IDataFragment, IDataFavorite, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements IDisplayMediaFragment, IDataFragment, IDataFavorite, ITransmissionAllSongsFragment, NavigationView.OnNavigationItemSelectedListener {
     public static IntentFilter Broadcast_PLAY_NEW_AUDIO;
     String PRIVATE_MODE = "color";
     AllSongsFragment allSongsFragment;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
     MediaPlaybackFragment mediaPlaybackFragment;
     private FavoriteSongsFragment mFavoriteSongsFragment;
     public MediaPlaybackService mediaPlaybackService;
+    IDataFavoriteAndAllSong iDataFavoriteAndAllSong;
     boolean serviceBound = false;
     private ArrayList<Song> mListSong;
     SharedPreferences sharedPreferences;
@@ -81,13 +84,15 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
         NavigationView navigationView = findViewById(R.id.nav_view);
         if (navigationView != null)
             navigationView.setNavigationItemSelectedListener(this);
-        mediaPlaybackFragment = new MediaPlaybackFragment();
+        baseSongListFragment= new BaseSongListFragment();
+        mediaPlaybackFragment = new MediaPlaybackFragment(this);
         allSongsFragment = new AllSongsFragment(this, this, this.mediaPlaybackFragment);
         mFavoriteSongsFragment = new FavoriteSongsFragment(null, mediaPlaybackService, mediaPlaybackFragment, this, this);
+        mediaPlaybackFragment.setBaseSongListFragment(baseSongListFragment);
         if (mediaPlaybackService != null)
             mFavoriteSongsFragment.setLisSong(mediaPlaybackService.getListSong());
         Log.d("HoangCVmediaPlaybackService", "onCreate: "+mediaPlaybackService);
-        allSongsFragment.setAllSong(mFavoriteSongsFragment);
+   //     allSongsFragment.setAllSong(mFavoriteSongsFragment);
         if (!isLandScape()) {
             if (isFavorite) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentSongOne, mFavoriteSongsFragment).commit();
@@ -126,10 +131,12 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
             serviceBound = true;
             allSongsFragment.setService(mediaPlaybackService);
             mediaPlaybackFragment.setService(mediaPlaybackService);
+        //    mediaPlaybackService.setBaseSongListFragment(baseSongListFragment);
             if (isLandScape()) {
                 allSongsFragment.setService(mediaPlaybackService);
                 mediaPlaybackService.setmMediaPlaybackFragment(mediaPlaybackFragment);
                 mediaPlaybackFragment.setService(mediaPlaybackService);
+                mediaPlaybackService.setBaseSongListFragment(baseSongListFragment);
             }
         }
 
@@ -161,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
 
     @Override
     public void onclickIDisplay(Song song) {
-        mediaPlaybackFragment = new MediaPlaybackFragment().newInstance(song);
+        mediaPlaybackFragment = new MediaPlaybackFragment(this).newInstance(song);
         FragmentManager manager1 = this.getSupportFragmentManager();
         manager1.beginTransaction()
                 .addToBackStack(null)
@@ -181,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
     public void onclickIData(ArrayList ListSong) {
         if (!isFavorite) {
             this.mListSong = ListSong;
+            mUpdateUI.UpdateSizeListAllSongs(mListSong.size());
         }
     }
 
@@ -213,9 +221,22 @@ public class MainActivity extends AppCompatActivity implements IDisplayMediaFrag
 
     @Override
     public void onClickIDataFavorite(ArrayList arrayList) {
-        if (isFavorite) {
+        if (isFavorite)
             this.mListSong = arrayList;
+    }
+
+    @Override
+    public void onClickTransmissionAllSongsFragment() {
+        if (isFavorite) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentSongOne, mFavoriteSongsFragment).commit();
+            mFavoriteSongsFragment.setLisSong(mListSong);
+            mDrawerLayout = findViewById(R.id.drawer_layout);
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            FragmentManager manager = this.getSupportFragmentManager();
+            manager.beginTransaction().replace(R.id.fragmentSongOne, allSongsFragment).commit();
         }
+        getSupportActionBar().show();
     }
 
     //Bkav Nhungltk

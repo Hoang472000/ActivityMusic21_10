@@ -27,6 +27,7 @@ import android.widget.SeekBar;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.out.activitymusic.BaseSongListFragment;
 import com.out.activitymusic.MainActivity;
 import com.out.activitymusic.MediaPlaybackFragment;
 import com.out.activitymusic.R;
@@ -56,6 +57,7 @@ public class MediaPlaybackService extends Service implements
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private NotificationManager mNotifyManager;
     private MediaPlaybackFragment mMediaPlaybackFragment;
+    private BaseSongListFragment baseSongListFragment;
     private int mCurrentPlay;
     private String mTitle = "";
     private String mArtistt = "";
@@ -78,18 +80,22 @@ public class MediaPlaybackService extends Service implements
     public int getPossision() {
         return possition;
     }
+
     public void setResume(boolean resume) {
         isResume = resume;
     }
 
     private boolean isResume;
-    public ArrayList<Integer> getfavoriteID(){
+
+    public ArrayList<Integer> getfavoriteID() {
         return favoriteID;
     }
-    public void setFavoriteID(ArrayList<Integer> favoriteID,boolean mIsFavorite){
-        this.favoriteID=favoriteID;
-        this.mIsFavorite=mIsFavorite;
+
+    public void setFavoriteID(ArrayList<Integer> favoriteID, boolean mIsFavorite) {
+        this.favoriteID = favoriteID;
+        this.mIsFavorite = mIsFavorite;
     }
+
     private SharedPreferences mSharePreferences;
     private static final String SHARED_PREFERENCES_NAME = "com.out.activitymusic";
 
@@ -105,6 +111,10 @@ public class MediaPlaybackService extends Service implements
 
     public void setmMediaPlaybackFragment(MediaPlaybackFragment mMediaPlaybackFragment) {
         this.mMediaPlaybackFragment = mMediaPlaybackFragment;
+    }
+
+    public void setBaseSongListFragment(BaseSongListFragment baseSongListFragment) {
+        this.baseSongListFragment = baseSongListFragment;
     }
 
     public String getNameSong() {
@@ -141,6 +151,7 @@ public class MediaPlaybackService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        RemoteViews mNotification = new RemoteViews(getPackageName(), R.layout.notification);
         Log.d("nhungltk123", "onStartCommand: `");
         try {
             mMediaFile = intent.getExtras().getString("media");
@@ -159,15 +170,14 @@ public class MediaPlaybackService extends Service implements
                     nextMedia();
                     break;
                 case ACTION_PLAY:
-                    if (mMediaPlayer.isPlaying())
+                    if (mMediaPlayer.isPlaying()) {
                         pauseMedia();
-                    else {
-                        try {
-                            playMedia(mListSong.get(possition));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        //       mNotification.setImageViewResource(R.id.play_ntf,R.drawable.ic_baseline_play_circle_filled_24);
+                    } else {
+                        resumeMedia();
+                        //       mNotification.setImageViewResource(R.id.play_ntf,R.drawable.ic_baseline_pause_circle_filled_24);
                     }
+
                     break;
             }
         }
@@ -356,7 +366,7 @@ public class MediaPlaybackService extends Service implements
     }
 
     public void playMedia(Song song) throws IOException {
-        possition = song.getID()-1;
+        possition = song.getID() - 1;
         if (mMediaPlayer != null)
             mMediaPlayer.reset();
         MediaPlayer mMediaPlayer = new MediaPlayer();
@@ -473,12 +483,12 @@ public class MediaPlaybackService extends Service implements
         RemoteViews mNotification = new RemoteViews(getPackageName(), R.layout.notification);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
-        builder.setSmallIcon(R.drawable.default_cover_art);
+        builder.setSmallIcon(R.drawable.icon_music);
         builder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         builder.setCustomContentView(mSmallNotification);
         builder.setCustomBigContentView(mNotification);
         builder.setContentIntent(pendingIntent);
-  
+
         mNotification.setTextViewText(R.id.title_ntf, nameSong);
         mNotification.setTextViewText(R.id.artist_ntf, nameArtist);
         mNotification.setOnClickPendingIntent(R.id.previous_ntf, previousPendingIntent);
@@ -490,7 +500,7 @@ public class MediaPlaybackService extends Service implements
         if (getAlbumn(path) != null) {
             mNotification.setImageViewBitmap(R.id.img_ntf, getAlbumn(path));
         } else {
-            mNotification.setImageViewResource(R.id.img_ntf, R.drawable.default_cover_art);
+            mNotification.setImageViewResource(R.id.img_ntf, R.drawable.icon_music_replace);
         }
         mSmallNotification.setOnClickPendingIntent(R.id.play_smallntf, playPendingIntent);
         mSmallNotification.setOnClickPendingIntent(R.id.previous_smallntf, previousPendingIntent);
@@ -501,10 +511,14 @@ public class MediaPlaybackService extends Service implements
         if (getAlbumn(path) != null) {
             mSmallNotification.setImageViewBitmap(R.id.img_ntf_small, getAlbumn(path));
         } else {
-            mSmallNotification.setImageViewResource(R.id.img_ntf_small, R.drawable.default_cover_art);
+            mSmallNotification.setImageViewResource(R.id.img_ntf_small, R.drawable.icon_music_replace);
         }
 
         startForeground(1, builder.build());
+        if (mMediaPlaybackFragment != null) mMediaPlaybackFragment.updateUI();
+        if (isLandscape())
+            if (baseSongListFragment != null) baseSongListFragment.updateUIWhenLandScape();
+            else if (baseSongListFragment != null) baseSongListFragment.updateUI();
     }
 
     public void createNotificationChanel() {
@@ -525,6 +539,13 @@ public class MediaPlaybackService extends Service implements
         metadataRetriever.setDataSource(path);
         byte[] data = metadataRetriever.getEmbeddedPicture();
         return data == null ? null : BitmapFactory.decodeByteArray(data, 0, data.length);
+    }
+
+    public boolean isLandscape() {
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            return true;
+        else return false;
     }
 
 }

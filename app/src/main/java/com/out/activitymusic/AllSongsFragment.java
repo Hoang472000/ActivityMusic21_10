@@ -35,12 +35,12 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
     private ListAdapter mListAdapter;
     private SharedPreferences mSharePreferences;
     ArrayList<Song> mListSongs;
+    ArrayList<Song> mListFavorite;
     IDataFragment IDataFragment;
     IDataFavoriteAndAllSong IDataFavoriteAndAllSong;
     IDisplayMediaFragment IDisplayMediaFragment;
     MediaPlaybackFragment mediaPlaybackFragment;
     MediaPlaybackService mediaPlaybackService;
-    FavoriteSongsProvider favoriteSongsProvider;
 
     private Boolean IsBoolean = false;
     private static final int LOADER_UI_EVENT = 1;
@@ -65,8 +65,8 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
         this.mediaPlaybackFragment = mediaPlaybackFragment;
     }
 
-    public void setAllSong(IDataFavoriteAndAllSong IDataFavoriteAndAllSong) {
-        this.IDataFavoriteAndAllSong = IDataFavoriteAndAllSong;
+    public void setAllSong(ArrayList<Song> mListFavorite) {
+        this.mListFavorite = mListFavorite;
     }
 
     public AllSongsFragment() {
@@ -106,12 +106,13 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
         mListSongs = new ArrayList<>();
         boolean isCreate = mSharePreferences.getBoolean("create_db", false);
         int id = 0;
+        int i = 0;
         String title = "";
         String file = "";
         String album = "";
         String artist = "";
         String duration = "";
-        favoriteSongsProvider = new FavoriteSongsProvider();
+
         Song song = new Song(id, title, file, album, artist, duration, false);
         if (data != null && data.getCount() > 0) {
             data.moveToFirst();
@@ -128,9 +129,16 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 album = song.getAlbum();
                 artist = song.getArtist();
                 duration = song.getDuration();
-                Log.d("mediaPlaybackService1", "onLoadFinished:service " + mediaPlaybackService);
-
-                mListSongs.add(new Song(id, title, file, album, artist, duration, false));
+             /*   if (mediaPlaybackService != null) {
+                    Log.d("mediaPlaybackService1", "onLoadFinished:service " + mediaPlaybackService.getfavoriteID());
+                    if (id - 1 < mediaPlaybackService.getfavoriteID().get(i)) {
+                        if (id - 1 == mediaPlaybackService.getfavoriteID().get(i)) {
+                            mListSongs.add(new Song(id, title, file, album, artist, duration, true));
+                            i++;
+                        } else
+                            mListSongs.add(new Song(id, title, file, album, artist, duration, false));
+                    } else mListSongs.add(new Song(id, title, file, album, artist, duration, false));
+                } else */mListSongs.add(new Song(id, title, file, album, artist, duration, false));
 
                 if (isCreate == false) {
                     ContentValues values = new ContentValues();
@@ -145,14 +153,7 @@ public class AllSongsFragment extends BaseSongListFragment implements LoaderMana
                 }
             } while (data.moveToNext());
         }
-        if(mediaPlaybackService!=null){
-            for(int j=0;j<mListSongs.size();j++){
-            for(int i=0;i<mediaPlaybackService.getfavoriteID().size();i++){
-                if(j==mediaPlaybackService.getfavoriteID().get(i)){
 
-                }
-            }}
-        }
         FavoriteSongsFragment favoriteSongsFragment = new FavoriteSongsFragment();
         favoriteSongsFragment.setLisSong(mListSong);/////////////////////////////////////.............
         setListSongs(mListSongs);
